@@ -1,0 +1,70 @@
+<h1>Learning Template Driven Forms and databing.Three directives you can bind data  ngForm,ngModel,ngModelGroup</h1>
+<div class="container-fluid">
+<h3>Bootcamp enrollment form</h3>
+
+<div class="alert alert-danger" *ngIf="errormsg">{{errormsg}}</div>
+<form #userForm="ngForm" (ngSubmit)="onSubmit()" novalidate *ngIf="!submitted"> <!--using ngform with template variable.This represents view or html or angularobject called ngform-->
+    <!--ngsubmit and novalidate are required to submit the form on server.Also we have to make use of service-->
+
+    {{name.pristine}} <!--gives false when modification is done on above input  name.valid gives true is smthing is entered in input-->
+
+<!--you can use ngModelGroup to group  a form. eg adress has many parts such as postal,street,number,etc.so it can be group under one address using ngmodel form--> 
+<div class="form-group">
+
+    <label>Name</label>
+    <input type="text" #name="ngModel"  required   class="form-control" 
+    [class.is-invalid]="name.invalid && name.touched" name="username" [(ngModel)]="userModel.name">
+</div>
+<!--[class.is-invalid]   knowns as class binding-->
+<!--tracking state and validity  ng-untouched, ng-pristine, ng-valid,ng-dirty ng-touched,ng-invalid-.these are class names of angulars -->
+<!--ngModel property--see in mobile. touched property means user has visited the form or not-->
+<small class="text-danger" [class.d-none]="name.valid || name.ng-untouched">Name is required</small> <!--[class.d-none]  --means donot show..text-danger is bootstrap class -->
+<div class="form-group">
+
+    <label>Email</label>
+    <input type="email" class="form-control" name="email" [(ngModel)]="userModel.email">
+</div>
+
+<div class="form-group">
+   
+    <label>Phone</label>
+    <input type="tel" class="form-control" required #ph="ngModel" [class.is-invalid]= "ph.invalid && ph.touched"   pattern="^\d{10}$" name="phone" [(ngModel)]="userModel.phone">
+  <!--  <small class="text-danger" [class.d-none]="ph.valid || ph.untouched">Phone number is required and must be 10 digits</small> -->
+  <div *ngIf="ph.errors && (ph.invalid || ph.touched)">
+    <small class="text-danger" *ngIf="ph.errors.required">Phone number is required</small>      
+    <small class="text-danger" *ngIf="ph.errors.pattern">Phone number must be 10 digits</small>  
+
+  </div>
+</div>
+
+<div class="form-group">
+    <select (blur)="validateTopic(topic.value)" (change)="validateTopic(topic.value)"  #topic="ngModel" [class.is-invalid]="topicHasEror && topic.touched" class="custom-select" name="topic" [(ngModel)]="userModel.topic">
+        <option value="default"> i am interested in </option>
+        <option *ngFor="let topic of topics"> {{topic}}</option>
+        
+    </select>
+    <small class="text-danger" [class.d-none]="!topicHasEror||topic.untouched">please choose a topic</small>
+</div>
+
+<div class="mb-3">
+    <label>Time preference</label>
+    <div class="form-check">
+      <input class="form-check-input" type="radio" name="timePreference" value="morning" [(ngModel)]="userModel.timePreference">
+      <label class="form-check-label">Morning (9AM - 12PM)</label>
+    </div>
+    <div class="form-check">
+      <input class="form-check-input" type="radio" name="timePreference" value="evening" [(ngModel)]="userModel.timePreference">
+      <label class="form-check-label">Evening (5PM - 8PM)</label>
+    </div>
+  </div>
+
+  <div class="form-check mb-3">
+    <input class="form-check-input" type="checkbox" name="subscribe" [(ngModel)]="userModel.subscribe ">
+    <label class="form-check-label">
+      Send me promotional offers
+    </label>
+  </div>
+  <button [disabled]="userForm.form.invalid|| topicHasEror" class="btn btn-primary" type="submit">submit form</button>
+</form>
+</div>
+
